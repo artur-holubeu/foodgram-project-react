@@ -15,6 +15,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+print(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -37,12 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users',
-    'recipes',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
+
+    'users',
+    'recipes',
 
 ]
 
@@ -153,10 +155,11 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
+    'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        'user_create': 'users.serializers.AuthCreateAccountSerializer',
-        'user': 'users.serializers.AuthUserSerializer',
-        'current_user': 'users.serializers.AuthUserSerializer',
+        'user_create': 'users.serializers.CreateAccountSerializer',
+        'user': 'users.serializers.UserBaseSerializer',
+        'current_user': 'users.serializers.UserBaseSerializer',
     },
     'PERMISSIONS': {
         'user': ['users.permissions.CurrentUserOrAdminOrReadOnly'],

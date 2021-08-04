@@ -1,3 +1,12 @@
 from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+
+class TagView(ModelViewSet):
+    ...
+
+class RecipeView(ModelViewSet):
+    ...
+
+class IngredientView(ModelViewSet):
+    ...

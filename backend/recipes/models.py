@@ -13,18 +13,23 @@ class Tag(models.Model):
     name = models.CharField(
         blank=False,
         max_length=200,
-        verbose_name=_('Название тэга.'),
+        verbose_name=_('Название тэга'),
         help_text=_('Название тэга.')
     )
     color = models.CharField(
         max_length=200,
-        verbose_name=_('Цвет тэга.'),
+        verbose_name=_('Цвет тэга'),
         help_text=_('Цвет в HEX.')
     )
     slug = models.SlugField(
         max_length=200,
         verbose_name=_('Техническое название тэга'),
-        help_text=_('Техническое название тэга')
+        help_text=_('Техническое название тэга.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
@@ -38,27 +43,36 @@ class Tag(models.Model):
             self.slug = slugify(self.slug)
         super().save(*args, **kwargs)
 
+    class Meta:
+        ordering = ('-updated_at',)
+
 
 class MeasurementUnit(models.Model):
     name = models.CharField(
         blank=False,
         unique=True,
         max_length=200,
-        verbose_name=_('Название системы исчесления.'),
+        verbose_name=_('Название системы исчесления'),
         help_text=_('Полное название системы исчесления.')
     )
     short_name = models.CharField(
         blank=False,
         unique=True,
         max_length=10,
-        verbose_name=_('Название системы исчесления.'),
+        verbose_name=_('Название системы исчесления'),
         help_text=_('Короткое название системы исчесления.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
-        return self.short_name
+        return f'{self.name} ({self.short_name})'
 
     class Meta:
+        ordering = ('-updated_at',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'short_name'],
                                     name='unique_measurement_unit')
@@ -70,69 +84,83 @@ class Ingredient(models.Model):
         blank=False,
         unique=True,
         max_length=200,
-        verbose_name=_('Название ингредиента.'),
+        verbose_name=_('Название ингредиента'),
         help_text=_('Название ингредиента.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
-        return {self.name}
+        return self.name
+
+    class Meta:
+        ordering = ('-updated_at',)
 
 
 class IngredientUnit(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
-        related_name="ingredients_unit",
+        related_name='ingredients_unit',
         on_delete=models.CASCADE,
-        verbose_name="Ингридиент",
-        help_text="Ингридиент используемый единцу исчесления.",
+        verbose_name=_('Ингридиент'),
+        help_text=_('Ингридиент используемый единцу исчесления.'),
     )
     measurement_unit = models.ForeignKey(
         MeasurementUnit,
-        related_name="ingredients_unit",
+        related_name='ingredients_unit',
         on_delete=models.CASCADE,
         verbose_name=_('Система измерений'),
-        help_text=_('Система измерений для ингредиента')
+        help_text=_('Система измерений для ингредиента.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
-        return f'{self.ingredient} ({self.measurement_unit})'
+        return f'{self.ingredient.name} ({self.measurement_unit.short_name})'
 
     class Meta:
+        ordering = ('-updated_at',)
         constraints = [
-            models.UniqueConstraint(fields=["ingredient", "measurement_unit"],
-                                    name="unique_ingredient_unit")
+            models.UniqueConstraint(fields=['ingredient', 'measurement_unit'],
+                                    name='unique_ingredient_unit')
         ]
 
 
 class Recipe(models.Model):
-    ingredients = models.ForeignKey(
+    ingredients = models.ManyToManyField(
         IngredientUnit,
-        related_name="recipes",
-        on_delete=models.CASCADE,
-        verbose_name="Ингридиент",
-        help_text="Ингридиенты к рецепту",
+        related_name='recipes',
+        blank=True,
+        verbose_name=_('Ингридиенты'),
+        help_text=_('Ингридиенты к рецепту.'),
     )
-    tags = models.ForeignKey(
+    tags = models.ManyToManyField(
         Tag,
-        related_name="recipes",
-        on_delete=models.CASCADE,
-        verbose_name="Тэги",
-        help_text="Тэги рецепта",
+        related_name='recipes',
+        blank=True,
+        verbose_name=_('Тэги'),
+        help_text=_('Тэги рецепта.'),
     )
     name = models.CharField(
         blank=False,
         max_length=200,
-        verbose_name=_('Название рецепта.'),
+        verbose_name=_('Название рецепта'),
         help_text=_('Название рецепта.')
     )
     text = models.TextField(
         blank=False,
-        verbose_name=_('Описание рецепта.'),
-        help_text=_('Описание рецепта.')
+        verbose_name=_('Описание рецепта'),
+        help_text=_('Полное пошаговое описание рецепта.')
     )
     cooking_time = models.IntegerField(
         verbose_name=_('Время приготовления'),
-        help_text=_('Время приготовления (в минутах)'),
+        help_text=_('Время приготовления (в минутах).'),
         validators=[
             validators.MinValueValidator(
                 limit_value=1,
@@ -145,99 +173,125 @@ class Recipe(models.Model):
     )
     author = models.ForeignKey(
         User,
-        related_name="recipes",
+        related_name='recipes',
         on_delete=models.CASCADE,
-        verbose_name="Автор",
-        help_text="Автор рецепта.",
+        verbose_name=_('Автор'),
+        help_text=_('Автор рецепта.'),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ('-updated_at',)
+
 
 class RecipeIngredients(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        related_name="recipe_ingredients",
+        related_name='recipe_ingredients',
         on_delete=models.CASCADE,
-        verbose_name="Рецепт",
-        help_text="Рецепт для которого используются ингреденеты.",
+        verbose_name=_('Рецепт'),
+        help_text=_('Рецепт для которого используются ингреденеты.'),
     )
     ingredient = models.ForeignKey(
         IngredientUnit,
-        related_name="recipe_ingredients",
+        related_name='recipe_ingredients',
         on_delete=models.CASCADE,
-        verbose_name="Ингредиент",
-        help_text="Ингреденет необходимый для рецепта.",
+        verbose_name=_('Ингредиент'),
+        help_text=_('Ингреденет необходимый для рецепта.'),
     )
-    amount = models.IntegerField(
+    amount = models.FloatField(
         verbose_name=_('Количество'),
-        help_text=_('Количество ингредиента'),
+        help_text=_('Количество ингредиента.'),
         validators=[
             validators.MinValueValidator(
                 limit_value=0,
                 message='Значение должно быть не меньше 0')]
     )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
+    )
 
     def __str__(self):
-        return f'{self.recipe} {self.ingredient}'
+        return f'{self.recipe.name} {self.ingredient.ingredient.name}'
 
     class Meta:
+        ordering = ('-updated_at',)
         constraints = [
-            models.UniqueConstraint(fields=["recipe", "ingredient"],
-                                    name="unique_recipe_ingredient")
+            models.UniqueConstraint(fields=['recipe', 'ingredient'],
+                                    name='unique_recipe_ingredient')
         ]
 
 
 class ShoppingList(models.Model):
     author = models.ForeignKey(
         User,
-        related_name="shopping_lists",
+        related_name='shopping_lists',
         on_delete=models.CASCADE,
-        verbose_name="Автор",
-        help_text="Автор листа покупок.",
+        verbose_name=_('Автор'),
+        help_text=_('Автор листа покупок.'),
 
     )
     recipe = models.ForeignKey(
         RecipeIngredients,
-        related_name="shopping_lists",
+        related_name='shopping_lists',
         on_delete=models.CASCADE,
-        verbose_name="Рецепт",
-        help_text="Рецепт из листа покупок.",
+        verbose_name=_('Рецепт'),
+        help_text=_('Рецепт из листа покупок.'),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
         return self.recipe
 
     class Meta:
+        ordering = ('-updated_at',)
         constraints = [
-            models.UniqueConstraint(fields=["author", "recipe"],
-                                    name="unique_shopping_list")
+            models.UniqueConstraint(fields=['author', 'recipe'],
+                                    name='unique_shopping_list')
         ]
 
 
 class FavoriteList(models.Model):
     author = models.ForeignKey(
         User,
-        related_name="favorite_lists",
+        related_name='favorite_lists',
         on_delete=models.CASCADE,
-        verbose_name="Автор",
-        help_text="Автор листа избранного.",
+        verbose_name=_('Автор'),
+        help_text=_('Автор листа избранного.'),
 
     )
     recipe = models.ForeignKey(
         Recipe,
-        related_name="favorite_lists",
+        related_name='favorite_lists',
         on_delete=models.CASCADE,
-        verbose_name="Рецепт",
-        help_text="Рецепт из листа избранного.",
+        verbose_name=_('Рецепт'),
+        help_text=_('Рецепт из листа избранного.'),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Дата обновления записи'),
+        help_text=_('Задается автоматически при обновлении записи.')
     )
 
     def __str__(self):
-        return self.recipe
+        return f'{self.author} {self.recipe}'
 
     class Meta:
+        ordering = ('-updated_at',)
         constraints = [
-            models.UniqueConstraint(fields=["author", "recipe"],
-                                    name="unique_favorite_list")
+            models.UniqueConstraint(fields=['author', 'recipe'],
+                                    name='unique_favorite_list')
         ]
