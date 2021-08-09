@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from .pagination import ListLimitPagination
 from djoser.views import UserViewSet
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.decorators import action
@@ -7,7 +6,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from djoser.permissions import CurrentUserOrAdmin
-from .serializers import SubscriptionsSerializer, SubscribeSerializer, UnsubscribeSerializer
+from recipes.serializers import SubscriptionsSerializer, SubscribeSerializer
+from recipes.pagination import ListLimitPagination
 from rest_framework.response import Response
 from .models import Subscription
 from rest_framework import status
@@ -44,9 +44,10 @@ class SubscriptionsListView(ListAPIView, GenericViewSet):
 
 
 class SubscribeView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = SubscribeSerializer
     queryset = Subscription.objects.get_queryset()
+    serializer_class = SubscribeSerializer
+    permission_classes = (IsAuthenticated,)
+    lookup_field = 'author_id'
 
     def destroy(self, request, *args, **kwargs):
         serializer = UnsubscribeSerializer(data={

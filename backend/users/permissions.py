@@ -1,8 +1,8 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 from django.contrib.auth.models import AnonymousUser
 
 
-class CurrentUserOrAdminOrReadOnly(IsAuthenticatedOrReadOnly):
+class CurrentUserOrAdminOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS or request.user.is_staff
