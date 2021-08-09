@@ -3,7 +3,6 @@ from django.contrib.auth.models import AnonymousUser
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound
-
 from users.models import Subscription
 from users.serializers import UserBaseSerializer
 
