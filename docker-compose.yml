@@ -32,7 +32,7 @@ services:
     image: ntcnqa/foodgram_frontend:v1.0
 
     volumes:
-      - frontend_data:/app/frontend/build/
+      - frontend_data:/app/build/
 
     depends_on:
       - db

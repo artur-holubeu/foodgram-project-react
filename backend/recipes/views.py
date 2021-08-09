@@ -1,25 +1,25 @@
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, DestroyModelMixin
-from rest_framework.permissions import IsAuthenticated
+import serializers
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import *
-from .serializers import *
-from .permissions import AdminOrReadOnly, ActiveCurrentUserOrAdminOrReadOnly
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
+
 from .filters import IngredientFilter, RecipeFilter
+from .models import FavoriteList, Ingredient, Recipe, ShoppingCart, Tag
 from .pagination import ListLimitPagination
-from rest_framework.decorators import action
+from .permissions import ActiveCurrentUserOrAdminOrReadOnly, AdminOrReadOnly
 
 
 class TagView(ModelViewSet):
     queryset = Tag.objects.all()
-    serializer_class = TagSerializers
+    serializer_class = serializers.TagSerializers
     pagination_class = None
     permission_classes = (AdminOrReadOnly,)
 
 
 class IngredientView(ModelViewSet):
     queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializers
+    serializer_class = serializers.IngredientSerializers
     pagination_class = None
     permission_classes = (AdminOrReadOnly, )
     filter_backends = (IngredientFilter,)
@@ -28,7 +28,7 @@ class IngredientView(ModelViewSet):
 
 class RecipeView(ModelViewSet):
     queryset = Recipe.objects.get_queryset()
-    serializer_class = RecipeSerializers
+    serializer_class = serializers.RecipeSerializers
     pagination_class = ListLimitPagination
     permission_classes = (ActiveCurrentUserOrAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
@@ -36,35 +36,35 @@ class RecipeView(ModelViewSet):
 
     def get_queryset(self):
         if self.request.query_params.get('is_favorited', 0) == '1':
-            favorite_id = [user.recipe.id for user in self.request.user.favorite_lists.all()]
+            favorite_id = [user.recipe.id for user
+                           in self.request.user.favorite_lists.all()]
             return self.queryset.filter(id__in=favorite_id)
         if self.request.query_params.get('is_in_shopping_cart', 0) == '1':
-            shopping_cart_id = [user.recipe.id for user in self.request.user.shopping_lists.all()]
+            shopping_cart_id = [user.recipe.id for user
+                                in self.request.user.shopping_lists.all()]
             return self.queryset.filter(id__in=shopping_cart_id)
         return super().get_queryset()
 
 
 class FavoriteView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = FavoriteList.objects.get_queryset()
-    serializer_class = FavoriteListSerializer
+    serializer_class = serializers.FavoriteListSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'recipe_id'
 
 
 class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = ShoppingCart.objects.get_queryset()
-    serializer_class = ShoppingCartSerializer
+    serializer_class = serializers.ShoppingCartSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'recipe_id'
 
 
-@action(methods=['get'], detail=False, permisson_class=IsAuthenticated)
-def download_shopping_cart(request):
-    x = request
-    user = request.user
-    print(user)
-
-
+# @action(methods=['get'], detail=False, permisson_class=IsAuthenticated)
+# def download_shopping_cart(request):
+#     x = request
+#     user = request.user
+#     print(user)
 
 
 # class FavoriteListView(ListModelMixin, GenericViewSet):

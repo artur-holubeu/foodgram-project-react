@@ -1,11 +1,10 @@
-from slugify import slugify
-from django.db import models
-from django.core import validators
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model
-from .services import upload_to
 import re
 
+from django.contrib.auth import get_user_model
+from django.core import validators
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from slugify import slugify
 
 User = get_user_model()
 
@@ -71,11 +70,6 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
-
-    # def save(self, *args, **kwargs):
-    #     self.name = self.name.lower()
-    #     self.measurement_unit = self.measurement_unit.lower()
-    #     super().save(*args, **kwargs)
 
     class Meta:
         ordering = ('name',)

@@ -1,13 +1,14 @@
-from rest_framework import serializers
-from .models import *
-from users.serializers import UserBaseSerializer
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound
 from users.models import Subscription
-from rest_framework import status
-from drf_extra_fields.fields import Base64ImageField
-from django.contrib.auth.models import AnonymousUser
-import base64
+from users.serializers import UserBaseSerializer
+
+from .models import (FavoriteList, Ingredient, IngredientsAmount, Recipe,
+                     ShoppingCart, Tag)
+
 User = get_user_model()
 
 
@@ -85,7 +86,8 @@ class RecipeSerializers(serializers.ModelSerializer):
         instance.image = validated_data.get('image', instance.image)
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get('cooking_time', instance.cooking_time)
+        instance.cooking_time = validated_data.get('cooking_time',
+                                                   instance.cooking_time)
         instance.save()
         return instance
 
@@ -93,17 +95,20 @@ class RecipeSerializers(serializers.ModelSerializer):
         user = self.context['request'].user
         if isinstance(user, AnonymousUser):
             return False
-        return FavoriteList.objects.filter(author=user, recipe=instant).exists()
+        return FavoriteList.objects.filter(author=user,
+                                           recipe=instant).exists()
 
     def get_is_in_shopping_cart(self, instant):
         user = self.context['request'].user
         if isinstance(user, AnonymousUser):
             return False
-        return ShoppingCart.objects.filter(author=user, recipe=instant).exists()
+        return ShoppingCart.objects.filter(author=user,
+                                           recipe=instant).exists()
 
     def _to_internal_value_image(self):
         image = self.initial_data.get('image')
-        self.initial_data['image'] = Base64ImageField().to_internal_value(image)
+        self.initial_data['image'] = Base64ImageField().to_internal_value(
+            image)
 
     def _to_internal_value_ingredients(self):
         ingredients = self.initial_data.get('ingredients')
@@ -117,7 +122,7 @@ class RecipeSerializers(serializers.ModelSerializer):
             if err_id := set(ingredients_id) ^ set(
                     x.id for x in ingredients_obj):
                 raise serializers.ValidationError({
-                    'errors': f'Переданы несуществующие ингредиенты',
+                    'errors': 'Переданы несуществующие ингредиенты',
                     'id': list(err_id),
                 })
 
@@ -139,7 +144,7 @@ class RecipeSerializers(serializers.ModelSerializer):
             tags_obj = Tag.objects.filter(pk__in=tags)
             if err_id := set(tags) ^ set(x.id for x in tags_obj):
                 raise serializers.ValidationError({
-                    'errors': f'Переданы несуществующие tag',
+                    'errors': 'Переданы несуществующие tag',
                     'id': list(err_id),
                 })
             self.initial_data['tags'] = tags_obj

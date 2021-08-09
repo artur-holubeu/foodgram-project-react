@@ -1,5 +1,5 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission
 from django.contrib.auth.models import AnonymousUser
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class CurrentUserOrAdminOrReadOnly(BasePermission):
