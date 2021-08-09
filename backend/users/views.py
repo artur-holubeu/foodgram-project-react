@@ -21,10 +21,9 @@ class UsersView(UserViewSet):
     pagination_class = ListLimitPagination
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         if self.request.method in SAFE_METHODS:
-            queryset = User.objects.all()
-        return queryset
+            return User.objects.all()
+        return super().get_queryset()
 
     @action(["get", "put", "patch", "delete"],
             detail=False,
@@ -59,3 +58,4 @@ class SubscribeView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
