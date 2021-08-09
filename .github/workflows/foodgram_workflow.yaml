@@ -52,6 +52,7 @@ jobs:
         - name: Push to Docker Hub
           uses: docker/build-push-action@v2
           with:
+            file: {context}/backend/Dockerfile
             push: true
             tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
 
@@ -80,6 +81,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          file: {context}/frontend/Dockerfile
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
 
   deploy:
