@@ -31,11 +31,6 @@ class IngredientAmount(serializers.ModelSerializer):
         model = IngredientsAmount
         fields = ('id', 'ingredient', 'amount')
 
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['amount'] = int(rep['amount'])
-        return rep
-
 
 class RecipeSerializers(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
@@ -114,24 +109,34 @@ class RecipeSerializers(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         if self.context['request'].method != 'PATCH' and not ingredients:
             raise serializers.ValidationError(
-                'Должен быть добавлен хотя бы один ингредиент.')
+                'Должен быть добавлен хотя бы один ингредиент.'
+            )
 
         if ingredients:
             ingredients_id = [x.get('id') for x in ingredients]
             ingredients_obj = Ingredient.objects.filter(pk__in=ingredients_id)
             if err_id := set(ingredients_id) ^ set(
                     x.id for x in ingredients_obj):
-                raise serializers.ValidationError({
-                    'errors': 'Переданы несуществующие ингредиенты',
-                    'id': list(err_id),
-                })
-
-            self.initial_data['ingredients'] = [
-                {
-                    'ingredient': ingredients_obj.get(pk=x.get('id')),
-                    'amount': x.get('amount'),
-                }
-                for x in ingredients]
+                raise serializers.ValidationError(
+                    {
+                        'errors': 'Переданы несуществующие ингредиенты',
+                        'id': list(err_id),
+                    }
+                )
+            try:
+                self.initial_data['ingredients'] = [
+                    {
+                        'ingredient': ingredients_obj.get(pk=x.get('id')),
+                        'amount': int(x.get('amount')),
+                    }
+                    for x in ingredients]
+            except ValueError:
+                raise serializers.ValidationError(
+                    {
+                        'errors': 'Значение для количества ингредиента должен '
+                                  'быть числом.',
+                    },
+                )
         else:
             self.initial_data['ingredients'] = []
 
@@ -173,12 +178,26 @@ class RecipeShortSerializers(RecipeSerializers):
 
 
 class SubscriptionsSerializer(UserBaseSerializer):
-    recipes = RecipeShortSerializers(many=True, read_only=True)
-
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes')
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes'
+        )
+        read_only_fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes'
+        )
 
     def to_representation(self, obj):
         rep = super().to_representation(obj)
@@ -189,36 +208,26 @@ class SubscriptionsSerializer(UserBaseSerializer):
         rep['recipes'] = rep['recipes'][:recipes_limit]
         return rep
 
-
-class SubscribeSerializer(SubscriptionsSerializer):
-    email = serializers.ReadOnlyField()
-    username = serializers.ReadOnlyField()
-    first_name = serializers.ReadOnlyField()
-    last_name = serializers.ReadOnlyField()
-
-    class Meta:
-        model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes')
-
     def validate(self, data):
-        author_id = self.context['request'].parser_context['kwargs'].get(
-            'author_id')
-        if not User.objects.filter(pk=author_id).exists():
+        following_id = self.context['request'].parser_context['kwargs'].get(
+            'following_id')
+
+        if not User.objects.filter(pk=following_id).exists():
             raise NotFound({
                 'detail': 'Страница не найдена.',
             }, code=status.HTTP_404_NOT_FOUND)
 
-        current_user = self.context['request'].user
-        author = User.objects.get(pk=author_id)
-        if author.id == current_user.id:
+        user = self.context['request'].user
+        following = User.objects.get(pk=following_id)
+
+        if following.id == user.id:
             raise serializers.ValidationError({
                 'errors': ('Пользователь не может быть подписан '
                            'на самого себя.'),
             })
 
         if Subscription.objects.filter(
-                user=current_user, following=author).exists():
+                user=user, following=following).exists():
             raise serializers.ValidationError({
                 'errors': 'Пользователь уже подписан на этого автора.',
             })
@@ -233,8 +242,8 @@ class SubscribeSerializer(SubscriptionsSerializer):
                            'быть меньше нуля.'),
             })
         return {
-            'user': current_user,
-            'following': author
+            'user': user,
+            'following': following
         }
 
     def create(self, validated_data):
@@ -244,35 +253,7 @@ class SubscribeSerializer(SubscriptionsSerializer):
         ).following
 
 
-class UnsubscribeSerializer(serializers.Serializer):
-
-    def validate(self, data):
-        author_id = self.initial_data.get('author_id')
-        if not User.objects.filter(pk=author_id).exists():
-            raise NotFound({
-                'detail': 'Страница не найдена.',
-            }, code=status.HTTP_404_NOT_FOUND)
-
-        current_user = self.initial_data.get('user')
-        author = User.objects.get(pk=author_id)
-        if not Subscription.objects.filter(
-                user=current_user, following=author).exists():
-            raise serializers.ValidationError({
-                'errors': 'Пользователь еще не подписан на этого автора.',
-            })
-        return {
-            'user': current_user,
-            'following': author,
-        }
-
-    def save(self, **kwargs):
-        user = self.validated_data.get('user')
-        following = self.validated_data.get('following')
-        Subscription.objects.filter(user=user, following=following).delete()
-
-
 class FavoriteListSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -306,7 +287,6 @@ class FavoriteListSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -315,9 +295,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         recipe_id = self.context['request'].parser_context['kwargs'].get(
             'recipe_id')
         if not Recipe.objects.filter(pk=recipe_id).exists():
-            raise NotFound({
-                'detail': 'Страница не найдена.',
-            }, code=status.HTTP_404_NOT_FOUND)
+            raise NotFound({'detail': 'Страница не найдена.'})
 
         author = self.context['request'].user
         recipe = Recipe.objects.get(pk=recipe_id)

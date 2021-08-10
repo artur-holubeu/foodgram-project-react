@@ -68,24 +68,3 @@ class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
 #     x = request
 #     user = request.user
 #     print(user)
-
-
-# class FavoriteListView(ListModelMixin, GenericViewSet):
-#     queryset = FavoriteList.objects.get_queryset()
-#     serializer_class = FavoriteListSerializer
-#     pagination_class = ListLimitPagination
-#     permission_classes = (IsAuthenticated,)
-#
-#     def get_queryset(self):
-#         self.queryset = self.request.user.favorite_lists.all()
-#         return [user.recipe for user in self.queryset]
-
-# class ShoppingCartView(ListModelMixin, GenericViewSet):
-#     queryset = ShoppingCart.objects.get_queryset()
-#     serializer_class = ShoppingCartSerializer
-#     pagination_class = ListLimitPagination
-#     permission_classes = (IsAuthenticated,)
-#
-#     def get_queryset(self):
-#         self.queryset = self.request.user.shopping_lists.all()
-#         return [user.recipe for user in self.queryset]

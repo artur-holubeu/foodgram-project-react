@@ -87,8 +87,9 @@ class IngredientsAmount(models.Model):
         verbose_name=_('Ингредиент'),
         help_text=_('Ингреденет необходимый для рецепта.'),
     )
-    amount = models.FloatField(
+    amount = models.IntegerField(
         verbose_name=_('Количество'),
+        blank=True,
         help_text=_('Количество ингредиента.'),
         validators=[
             validators.MinValueValidator(

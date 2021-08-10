@@ -2,14 +2,11 @@ from django.contrib.auth import get_user_model
 from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet
 from recipes.pagination import ListLimitPagination
-from recipes.serializers import (SubscribeSerializer, SubscriptionsSerializer,
-                                 UnsubscribeSerializer)
-from rest_framework import status
+from recipes.serializers import SubscriptionsSerializer
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .models import Subscription
@@ -33,29 +30,26 @@ class UsersView(UserViewSet):
         return super().me(request, *args, **kwargs)
 
 
-class SubscriptionsListView(ListAPIView, GenericViewSet):
+class SubscriptionsListView(ListAPIView,
+                            CreateModelMixin,
+                            DestroyModelMixin,
+                            GenericViewSet):
     queryset = Subscription.objects.get_queryset()
     serializer_class = SubscriptionsSerializer
     pagination_class = ListLimitPagination
     permission_classes = (IsAuthenticated,)
+    lookup_field = 'following_id'
 
     def get_queryset(self):
-        self.queryset = self.request.user.follower.all()
-        return [user.following for user in self.queryset]
+        if self.action == 'list':
+            return [user.following for user
+                    in self.request.user.follower.all()]
+        return super().get_queryset()
 
+    @action(['GET'], url_name='subscribe', detail=False)
+    def create(self, request, *args, **kwargs):
+        return super().create(request, args, kwargs)
 
-class SubscribeView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
-    queryset = Subscription.objects.get_queryset()
-    serializer_class = SubscribeSerializer
-    permission_classes = (IsAuthenticated,)
-    lookup_field = 'author_id'
-
+    @action(['DELETE'], url_name='subscribe', detail=False)
     def destroy(self, request, *args, **kwargs):
-        serializer = UnsubscribeSerializer(data={
-            'user': request.user,
-            'author_id': kwargs.get('author_id')
-        })
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, args, kwargs)
