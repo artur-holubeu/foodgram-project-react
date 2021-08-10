@@ -14,7 +14,7 @@ services:
       - backend/.env
 
   backend:
-    image: ntcnqa/foodgram_backend:v1.0
+    image: ntcnqa/foodgram_backend:latest
 
     restart: always
 
@@ -29,7 +29,7 @@ services:
       - db
 
   frontend:
-    image: ntcnqa/foodgram_frontend:v1.0
+    image: ntcnqa/foodgram_frontend:latest
 
     volumes:
       - frontend_data:/app/build/

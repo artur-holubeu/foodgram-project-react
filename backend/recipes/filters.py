@@ -13,7 +13,7 @@ class TagFilter(filters.BaseInFilter, filters.CharFilter):
 
 
 class RecipeFilter(filters.FilterSet):
-    tags = TagFilter(field_name='tags__name', lookup_expr='in')
+    tags = TagFilter(field_name='tags__name', lookup_expr='contains')
 
     class Meta:
         model = Recipe
