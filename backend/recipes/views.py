@@ -1,4 +1,3 @@
-import serializers
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
@@ -8,18 +7,21 @@ from .filters import IngredientFilter, RecipeFilter
 from .models import FavoriteList, Ingredient, Recipe, ShoppingCart, Tag
 from .pagination import ListLimitPagination
 from .permissions import ActiveCurrentUserOrAdminOrReadOnly, AdminOrReadOnly
+from .serializers import (FavoriteListSerializer, IngredientSerializers,
+                          RecipeSerializers, ShoppingCartSerializer,
+                          TagSerializers)
 
 
 class TagView(ModelViewSet):
     queryset = Tag.objects.all()
-    serializer_class = serializers.TagSerializers
+    serializer_class = TagSerializers
     pagination_class = None
     permission_classes = (AdminOrReadOnly,)
 
 
 class IngredientView(ModelViewSet):
     queryset = Ingredient.objects.all()
-    serializer_class = serializers.IngredientSerializers
+    serializer_class = IngredientSerializers
     pagination_class = None
     permission_classes = (AdminOrReadOnly, )
     filter_backends = (IngredientFilter,)
@@ -28,7 +30,7 @@ class IngredientView(ModelViewSet):
 
 class RecipeView(ModelViewSet):
     queryset = Recipe.objects.get_queryset()
-    serializer_class = serializers.RecipeSerializers
+    serializer_class = RecipeSerializers
     pagination_class = ListLimitPagination
     permission_classes = (ActiveCurrentUserOrAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
@@ -48,14 +50,14 @@ class RecipeView(ModelViewSet):
 
 class FavoriteView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = FavoriteList.objects.get_queryset()
-    serializer_class = serializers.FavoriteListSerializer
+    serializer_class = FavoriteListSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'recipe_id'
 
 
 class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = ShoppingCart.objects.get_queryset()
-    serializer_class = serializers.ShoppingCartSerializer
+    serializer_class = ShoppingCartSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'recipe_id'
 
