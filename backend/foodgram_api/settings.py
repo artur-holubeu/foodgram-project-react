@@ -188,8 +188,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 STATIC_URL = '/backend_static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'backend_static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'backend_static/')
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-UPLOADED_FILES_USE_URL = True
+MEDIA_URL = '/backend_media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'backend_media/')
