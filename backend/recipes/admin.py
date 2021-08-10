@@ -21,7 +21,7 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'author_name', )
     search_fields = ('id', 'name', )
-    list_filter = ('name', 'author__name', 'tag')
+    list_filter = ('name', 'author', 'tags')
 
     def author_name(self, obj):
         return obj.author.name
@@ -30,7 +30,7 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'author_name', 'recipe_name')
-    list_filter = ('author__name',)
+    list_filter = ('author',)
 
     def author_name(self, obj):
         return obj.author.name
@@ -42,7 +42,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 @admin.register(FavoriteList)
 class FavoriteListAdmin(admin.ModelAdmin):
     list_display = ('id', 'author_name', 'recipe_name')
-    list_filter = ('author__name',)
+    list_filter = ('author',)
 
     def author_name(self, obj):
         return obj.author.name
