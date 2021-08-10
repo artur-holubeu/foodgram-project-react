@@ -37,11 +37,11 @@ class RecipeView(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_queryset(self):
-        if self.request.query_params.get('is_favorited', 0) == '1':
+        if self.request.query_params.get('is_favorited', False) == 'true':
             favorite_id = [user.recipe.id for user
                            in self.request.user.favorite_lists.all()]
             return self.queryset.filter(id__in=favorite_id)
-        if self.request.query_params.get('is_in_shopping_cart', 0) == '1':
+        if self.request.query_params.get('is_in_shopping_cart', False) == 'true':
             shopping_cart_id = [user.recipe.id for user
                                 in self.request.user.shopping_lists.all()]
             return self.queryset.filter(id__in=shopping_cart_id)
