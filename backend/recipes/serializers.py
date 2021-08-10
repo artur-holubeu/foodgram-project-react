@@ -25,11 +25,22 @@ class IngredientSerializers(serializers.ModelSerializer):
 
 
 class IngredientAmount(serializers.ModelSerializer):
-    ingredient = IngredientSerializers(read_only=True)
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    measurement_unit = serializers.SerializerMethodField()
 
     class Meta:
         model = IngredientsAmount
-        fields = ('id', 'ingredient', 'amount')
+        fields = ('id', 'name', 'measurement_unit', 'amount')
+
+    def get_name(self, instant):
+        return instant.ingredient.name
+
+    def get_id(self, instant):
+        return instant.ingredient.id
+
+    def get_measurement_unit(self, instant):
+        return instant.ingredient.measurement_unit
 
 
 class RecipeSerializers(serializers.ModelSerializer):
@@ -178,6 +189,8 @@ class RecipeShortSerializers(RecipeSerializers):
 
 
 class SubscriptionsSerializer(UserBaseSerializer):
+    recipes = RecipeShortSerializers(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -196,7 +209,6 @@ class SubscriptionsSerializer(UserBaseSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
-            'recipes'
         )
 
     def to_representation(self, obj):
