@@ -41,7 +41,8 @@ class RecipeView(ModelViewSet):
             favorite_id = [user.recipe.id for user
                            in self.request.user.favorite_lists.all()]
             return self.queryset.filter(id__in=favorite_id)
-        if self.request.query_params.get('is_in_shopping_cart', False) == 'true':
+        if self.request.query_params.get(
+                'is_in_shopping_cart', False) == 'true':
             shopping_cart_id = [user.recipe.id for user
                                 in self.request.user.shopping_lists.all()]
             return self.queryset.filter(id__in=shopping_cart_id)
