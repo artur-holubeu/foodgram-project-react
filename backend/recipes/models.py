@@ -144,6 +144,7 @@ class Recipe(models.Model):
                 message='Значение должно быть больше 0')]
     )
     image = models.ImageField(
+        upload_to=_('recipes/images/'),
         verbose_name=_('Картинка рецепта'),
         help_text=_('Картинка рецепта.'),
     )

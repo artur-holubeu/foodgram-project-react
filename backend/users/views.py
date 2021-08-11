@@ -44,6 +44,8 @@ class SubscriptionsListView(ListAPIView,
         if self.action == 'list':
             return [user.following for user
                     in self.request.user.follower.all()]
+        if self.action == 'destroy':
+            return self.request.user.follower.all()
         return super().get_queryset()
 
     @action(['GET'], url_name='subscribe', detail=False)

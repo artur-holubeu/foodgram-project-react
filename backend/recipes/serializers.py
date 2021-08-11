@@ -70,6 +70,7 @@ class RecipeSerializers(serializers.ModelSerializer):
         self._to_internal_value_ingredients()
         self._to_internal_value_tags()
         self._to_internal_value_image()
+        self._to_internal_value_cooking_time()
         data['author'] = self.context['request'].user
         return data
 
@@ -167,6 +168,21 @@ class RecipeSerializers(serializers.ModelSerializer):
         else:
             self.initial_data['tags'] = []
 
+    def _to_internal_value_cooking_time(self):
+        cooking_time = self.initial_data.get('cooking_time')
+        if self.context['request'].method != 'PATCH' and not cooking_time:
+            raise serializers.ValidationError(
+                'Укажите, пожалуйста, время приготовления.')
+        try:
+            self.initial_data['cooking_time'] = int(cooking_time)
+        except ValueError:
+            raise serializers.ValidationError(
+                {
+                    'errors': ('Значение для времени '
+                               'приготовления должно быть числом.'),
+                }
+            )
+
     def _update_ingredients(self, name_param='ingredients'):
         new_data_raw = self.validated_data[name_param]
         if new_data_raw:
@@ -213,11 +229,11 @@ class SubscriptionsSerializer(UserBaseSerializer):
 
     def to_representation(self, obj):
         rep = super().to_representation(obj)
-        recipes_limit = int(
-            self.context['request'].query_params.get('recipes_limit')
-        )
         rep['recipes_count'] = len(rep['recipes'])
-        rep['recipes'] = rep['recipes'][:recipes_limit]
+        recipes_limit = self.context['request'].query_params.get(
+            'recipes_limit')
+        if recipes_limit:
+            rep['recipes'] = rep['recipes'][:int(recipes_limit)]
         return rep
 
     def validate(self, data):
@@ -244,15 +260,14 @@ class SubscriptionsSerializer(UserBaseSerializer):
                 'errors': 'Пользователь уже подписан на этого автора.',
             })
 
-        recipes_limit = int(
-            self.context['request'].query_params.get('recipes_limit')
-        )
+        if recipes_limit := self.context['request'].query_params.get(
+                'recipes_limit'):
 
-        if recipes_limit < 0:
-            raise serializers.ValidationError({
-                'errors': ('Минимальное количество рецептов не может '
-                           'быть меньше нуля.'),
-            })
+            if int(recipes_limit) < 0:
+                raise serializers.ValidationError({
+                    'errors': ('Минимальное количество рецептов не может '
+                               'быть меньше нуля.'),
+                })
         return {
             'user': user,
             'following': following
