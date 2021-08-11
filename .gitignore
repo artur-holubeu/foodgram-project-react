@@ -132,3 +132,4 @@ dmypy.json
 .idea
 backend/backend_static/*
 backend/backend_media/*
+command_console.txt
