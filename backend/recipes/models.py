@@ -18,13 +18,16 @@ class Tag(models.Model):
         help_text=_('Название тэга.')
     )
     color = models.CharField(
+        blank=False,
+        unique=True,
         max_length=200,
         verbose_name=_('Цвет тэга'),
         help_text=_('Цвет в HEX.')
     )
     slug = models.SlugField(
-        max_length=200,
+        blank=False,
         unique=True,
+        max_length=200,
         verbose_name=_('Техническое название тэга'),
         help_text=_('Техническое название тэга.')
     )
@@ -46,6 +49,8 @@ class Tag(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
+        verbose_name = _('Ярлык')
+        verbose_name_plural = _('Ярлыки')
         ordering = ('-updated_at',)
 
 
@@ -72,6 +77,8 @@ class Ingredient(models.Model):
         return self.name
 
     class Meta:
+        verbose_name = _('Ингредиент')
+        verbose_name_plural = _('Ингредиенты')
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'measurement_unit'],
@@ -136,6 +143,7 @@ class Recipe(models.Model):
         help_text=_('Полное пошаговое описание рецепта.')
     )
     cooking_time = models.IntegerField(
+        blank=False,
         verbose_name=_('Время приготовления'),
         help_text=_('Время приготовления (в минутах).'),
         validators=[
@@ -144,6 +152,7 @@ class Recipe(models.Model):
                 message='Значение должно быть больше 0')]
     )
     image = models.ImageField(
+        blank=False,
         upload_to=_('recipes/images/'),
         verbose_name=_('Картинка рецепта'),
         help_text=_('Картинка рецепта.'),
@@ -165,6 +174,8 @@ class Recipe(models.Model):
         return self.name
 
     class Meta:
+        verbose_name = _('Рецепт')
+        verbose_name_plural = _('Рецепты')
         ordering = ('-updated_at',)
 
 
@@ -191,9 +202,11 @@ class ShoppingCart(models.Model):
     )
 
     def __str__(self):
-        return self.recipe
+        return self.recipe.name
 
     class Meta:
+        verbose_name = _('Список покупок')
+        verbose_name_plural = _('Списки покупок')
         ordering = ('-updated_at',)
         constraints = [
             models.UniqueConstraint(fields=['author', 'recipe'],
@@ -224,9 +237,11 @@ class FavoriteList(models.Model):
     )
 
     def __str__(self):
-        return f'{self.author} {self.recipe}'
+        return f'{self.author} {self.recipe.name}'
 
     class Meta:
+        verbose_name = _('Список избранных')
+        verbose_name_plural = _('Списки избранных')
         ordering = ('-updated_at',)
         constraints = [
             models.UniqueConstraint(fields=['author', 'recipe'],

@@ -15,13 +15,13 @@ User = get_user_model()
 class TagSerializers(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'name', 'color', 'slug')
+        fields = ('id', 'name', 'color', 'slug', )
 
 
 class IngredientSerializers(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ('id', 'name', 'measurement_unit')
+        fields = ('id', 'name', 'measurement_unit', )
 
 
 class IngredientAmount(serializers.ModelSerializer):
@@ -31,16 +31,16 @@ class IngredientAmount(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientsAmount
-        fields = ('id', 'name', 'measurement_unit', 'amount')
+        fields = ('id', 'name', 'measurement_unit', 'amount', )
 
-    def get_name(self, instant):
-        return instant.ingredient.name
+    def get_name(self, instance):
+        return instance.ingredient.name
 
-    def get_id(self, instant):
-        return instant.ingredient.id
+    def get_id(self, instance):
+        return instance.ingredient.id
 
-    def get_measurement_unit(self, instant):
-        return instant.ingredient.measurement_unit
+    def get_measurement_unit(self, instance):
+        return instance.ingredient.measurement_unit
 
 
 class RecipeSerializers(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class RecipeSerializers(serializers.ModelSerializer):
             'name',
             'image',
             'text',
-            'cooking_time'
+            'cooking_time',
         )
 
     def to_internal_value(self, data):
@@ -73,9 +73,6 @@ class RecipeSerializers(serializers.ModelSerializer):
         self._to_internal_value_cooking_time()
         data['author'] = self.context['request'].user
         return data
-
-    def validate(self, attrs):
-        return super().validate(attrs)
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
@@ -98,19 +95,19 @@ class RecipeSerializers(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def get_is_favorited(self, instant):
+    def get_is_favorited(self, instance):
         user = self.context['request'].user
         if isinstance(user, AnonymousUser):
             return False
         return FavoriteList.objects.filter(author=user,
-                                           recipe=instant).exists()
+                                           recipe=instance).exists()
 
-    def get_is_in_shopping_cart(self, instant):
+    def get_is_in_shopping_cart(self, instance):
         user = self.context['request'].user
         if isinstance(user, AnonymousUser):
             return False
         return ShoppingCart.objects.filter(author=user,
-                                           recipe=instant).exists()
+                                           recipe=instance).exists()
 
     def _to_internal_value_image(self):
         image = self.initial_data.get('image')
@@ -201,7 +198,7 @@ class RecipeSerializers(serializers.ModelSerializer):
 class RecipeShortSerializers(RecipeSerializers):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time', )
 
 
 class SubscriptionsSerializer(UserBaseSerializer):
@@ -216,7 +213,7 @@ class SubscriptionsSerializer(UserBaseSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
-            'recipes'
+            'recipes',
         )
         read_only_fields = (
             'email',
@@ -283,15 +280,17 @@ class SubscriptionsSerializer(UserBaseSerializer):
 class FavoriteListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time', )
 
     def to_internal_value(self, data):
         recipe_id = self.context['request'].parser_context['kwargs'].get(
             'recipe_id')
         if not Recipe.objects.filter(pk=recipe_id).exists():
-            raise NotFound({
-                'detail': 'Страница не найдена.',
-            }, code=status.HTTP_404_NOT_FOUND)
+            raise NotFound(
+                {
+                    'detail': 'Страница не найдена.',
+                }
+            )
 
         author = self.context['request'].user
         recipe = Recipe.objects.get(pk=recipe_id)
@@ -316,7 +315,7 @@ class FavoriteListSerializer(serializers.ModelSerializer):
 class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time', )
 
     def to_internal_value(self, data):
         recipe_id = self.context['request'].parser_context['kwargs'].get(

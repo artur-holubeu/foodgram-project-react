@@ -16,7 +16,10 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ('id', 'user__username', 'user__email')
 
     def user_name(self, obj):
-        return obj.auhtor.name
+        return obj.user.username
 
     def following_name(self, obj):
-        return obj.following.name
+        return obj.following.username
+
+    user_name.short_description = 'Имя подписчика'
+    following_name.short_description = 'На кого подписан'

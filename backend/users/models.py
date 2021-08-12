@@ -31,7 +31,7 @@ class User(AbstractUser):
         verbose_name=_('Фамилия'),
         help_text=_('Фамилия пользователя.')
     )
-
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name',)
 
@@ -39,6 +39,8 @@ class User(AbstractUser):
         return self.username
 
     class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
         ordering = ('id',)
 
 
@@ -68,4 +70,6 @@ class Subscription(models.Model):
         return self.user.username
 
     class Meta:
+        verbose_name = 'Подписки'
+        verbose_name_plural = 'Подписки'
         ordering = ('-updated_at',)

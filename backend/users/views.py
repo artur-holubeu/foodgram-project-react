@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet
-from recipes.pagination import ListLimitPagination
 from recipes.serializers import SubscriptionsSerializer
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -15,7 +14,6 @@ User = get_user_model()
 
 
 class UsersView(UserViewSet):
-    pagination_class = ListLimitPagination
 
     def get_queryset(self):
         if self.request.method in SAFE_METHODS:
@@ -36,7 +34,6 @@ class SubscriptionsListView(ListAPIView,
                             GenericViewSet):
     queryset = Subscription.objects.get_queryset()
     serializer_class = SubscriptionsSerializer
-    pagination_class = ListLimitPagination
     permission_classes = (IsAuthenticated,)
     lookup_field = 'following_id'
 
