@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import FavoriteList, Ingredient, Recipe, ShoppingCart, Tag
+
+from .models import (FavoriteList, Ingredient, IngredientsAmount, Recipe,
+                     ShoppingCart, Tag)
 
 
 class FirstLetterListFilter(admin.SimpleListFilter):
@@ -42,6 +44,12 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'measurement_unit', )
     search_fields = ('id', 'name', )
     list_filter = (FirstLetterListFilter, )
+
+
+@admin.register(IngredientsAmount)
+class IngredientsAmountAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'amount', )
+    search_fields = ('id', 'ingredient__name')
 
 
 @admin.register(Recipe)

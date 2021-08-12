@@ -74,7 +74,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.measurement_unit})'
 
     class Meta:
         verbose_name = _('Ингредиент')
@@ -108,12 +108,17 @@ class IngredientsAmount(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
+    @property
+    def name(self):
+        return self.ingredient.name
+
     def __str__(self):
-        return (f'{self.ingredient.name} {self.amount} '
-                f'{self.ingredient.measurement_unit}')
+        return f'{self.name} {self.amount} {self.ingredient.measurement_unit}'
 
     class Meta:
-        ordering = ('-ingredient',)
+        verbose_name = _('Количество ингредиентов')
+        verbose_name_plural = _('Количество ингредиентов')
+        ordering = ('ingredient',)
 
 
 class Recipe(models.Model):

@@ -31,7 +31,6 @@ class User(AbstractUser):
         verbose_name=_('Фамилия'),
         help_text=_('Фамилия пользователя.')
     )
-    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name',)
 

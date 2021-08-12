@@ -31,4 +31,3 @@ class RecipeFilter(filters.FilterSet):
                            in check_in_queryset.get(name)]
             return queryset.filter(id__in=favorite_id)
         return queryset
-
