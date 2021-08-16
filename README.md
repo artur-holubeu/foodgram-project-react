@@ -57,6 +57,33 @@ password: 9TmJ21p^!14NDSSv5p
 
 ### Описание API запросов с примерами ответов
 
+- [Получить список пользователей](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9)
+- [Регистрация пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D1%8F-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Получить токен авторизации](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%82%D0%BE%D0%BA%D0%B5%D0%BD-%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8)
+- [Удалить токен авторизации текущего пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D1%83%D0%B4%D0%B0%D0%BB%D0%B8%D1%82%D1%8C-%D1%82%D0%BE%D0%BA%D0%B5%D0%BD-%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8-%D1%82%D0%B5%D0%BA%D1%83%D1%89%D0%B5%D0%B3%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Получить данные пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Получить данные текущего пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5-%D1%82%D0%B5%D0%BA%D1%83%D1%89%D0%B5%D0%B3%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Изменить пароль текущего пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B8%D1%82%D1%8C-%D0%BF%D0%B0%D1%80%D0%BE%D0%BB%D1%8C-%D1%82%D0%B5%D0%BA%D1%83%D1%89%D0%B5%D0%B3%D0%BE-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Восстановить пароль пользователя по его email](https://github.com/artur-holubeu/foodgram-project-react#%D0%B2%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D1%8C-%D0%BF%D0%B0%D1%80%D0%BE%D0%BB%D1%8C-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F-%D0%BF%D0%BE-%D0%B5%D0%B3%D0%BE-email)
+- [Подтверждение для восстановления пароля](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%B4%D1%82%D0%B2%D0%B5%D1%80%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B4%D0%BB%D1%8F-%D0%B2%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%B0%D1%80%D0%BE%D0%BB%D1%8F)
+- [Посмотреть список подписчиков](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BF%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D1%87%D0%B8%D0%BA%D0%BE%D0%B2)
+- [Подписаться на пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F-%D0%BD%D0%B0-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Отписаться от пользователя](https://github.com/artur-holubeu/foodgram-project-react#%D0%BE%D1%82%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F-%D0%BE%D1%82-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+- [Получить список ингредиентов](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%B8%D0%BD%D0%B3%D1%80%D0%B5%D0%B4%D0%B8%D0%B5%D0%BD%D1%82%D0%BE%D0%B2)
+- [Получить ингредиент](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D0%B8%D0%BD%D0%B3%D1%80%D0%B5%D0%B4%D0%B8%D0%B5%D0%BD%D1%82)
+- [Получить список тегов](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D1%82%D0%B5%D0%B3%D0%BE%D0%B2)
+- [Получить тег](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%82%D0%B5%D0%B3)
+- [Получить список рецептов](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82%D0%BE%D0%B2)
+- [Создать рецепт](https://github.com/artur-holubeu/foodgram-project-react#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82)
+- [Получить рецепт по id](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82-%D0%BF%D0%BE-id)
+- [Полное или частичное обновление рецепта](https://github.com/artur-holubeu/foodgram-project-react#%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B5-%D0%B8%D0%BB%D0%B8-%D1%87%D0%B0%D1%81%D1%82%D0%B8%D1%87%D0%BD%D0%BE%D0%B5-%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82%D0%B0)
+- [Удалить рецепт](https://github.com/artur-holubeu/foodgram-project-react#%D1%83%D0%B4%D0%B0%D0%BB%D0%B8%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82)
+- [Добавить рецепт в избранное](https://github.com/artur-holubeu/foodgram-project-react#%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%B8%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82-%D0%B2-%D0%B8%D0%B7%D0%B1%D1%80%D0%B0%D0%BD%D0%BD%D0%BE%D0%B5)
+- [Удалить рецепт из избранного](https://github.com/artur-holubeu/foodgram-project-react#%D1%83%D0%B4%D0%B0%D0%BB%D0%B8%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82-%D0%B8%D0%B7-%D0%B8%D0%B7%D0%B1%D1%80%D0%B0%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE)
+- [Добавить рецепт в список покупок](https://github.com/artur-holubeu/foodgram-project-react#%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%B8%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82-%D0%B2-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BF%D0%BE%D0%BA%D1%83%D0%BF%D0%BE%D0%BA)
+- [Удалить рецепт из списка покупок](https://github.com/artur-holubeu/foodgram-project-react#%D1%83%D0%B4%D0%B0%D0%BB%D0%B8%D1%82%D1%8C-%D1%80%D0%B5%D1%86%D0%B5%D0%BF%D1%82-%D0%B8%D0%B7-%D1%81%D0%BF%D0%B8%D1%81%D0%BA%D0%B0-%D0%BF%D0%BE%D0%BA%D1%83%D0%BF%D0%BE%D0%BA)
+- [Скачать список покупок](https://github.com/artur-holubeu/foodgram-project-react#%D1%81%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BF%D0%BE%D0%BA%D1%83%D0%BF%D0%BE%D0%BA)
+
 ##### Получить список пользователей
 `GET api/users/`
 
@@ -196,7 +223,7 @@ email - email пользователя
 {}
 ```
 
-##### Подтверждение для последующего восстановления пароля
+##### Подтверждение для восстановления пароля
 `POST /api/users/reset_password_confirm/`
 
 ```
