@@ -26,7 +26,7 @@ jobs:
       run: |
         # запуск проверки проекта по flake8
         python -m flake8
-        python -m manage.py test
+        python manage.py test
 
   build_and_push_backend_to_docker_hub:
       name: Push Docker image BACKEND to Docker Hub
