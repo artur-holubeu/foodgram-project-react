@@ -181,7 +181,7 @@ DJOSER = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^/api/.*$'
+# CORS_URLS_REGEX = r'^/api/.*$'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 STATIC_URL = '/backend_static/'
