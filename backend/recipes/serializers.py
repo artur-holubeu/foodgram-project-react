@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import ValidationError
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound
@@ -111,15 +112,25 @@ class RecipeSerializers(serializers.ModelSerializer):
 
     def _to_internal_value_image(self):
         image = self.initial_data.get('image')
-        self.initial_data['image'] = Base64ImageField().to_internal_value(
-            image)
+        if self.context['request'].method != 'PATCH' and not image:
+            raise serializers.ValidationError({
+                'image': 'Должно быть добавлено изображение блюда.'
+            })
+        if image:
+            try:
+                image = Base64ImageField().to_internal_value(image)
+                self.initial_data['image'] = image
+            except ValidationError:
+                raise serializers.ValidationError({
+                    'image': 'Загрузите корректное изображение.'
+                })
 
     def _to_internal_value_ingredients(self):
         ingredients = self.initial_data.get('ingredients')
         if self.context['request'].method != 'PATCH' and not ingredients:
-            raise serializers.ValidationError(
-                'Должен быть добавлен хотя бы один ингредиент.'
-            )
+            raise serializers.ValidationError({
+                'ingredients': 'Должен быть добавлен хотя бы один ингредиент.'
+            })
 
         if ingredients:
             ingredients_id = [x.get('id') for x in ingredients]
@@ -146,14 +157,14 @@ class RecipeSerializers(serializers.ModelSerializer):
                                   'быть числом.',
                     },
                 )
-        else:
-            self.initial_data['ingredients'] = []
 
     def _to_internal_value_tags(self):
         tags = self.initial_data.get('tags')
         if self.context['request'].method != 'PATCH' and not tags:
-            raise serializers.ValidationError(
-                'Должен быть добавлен хотя бы один tag.')
+            raise serializers.ValidationError({
+                'tags': 'Должен быть добавлен хотя бы один tag.'
+            })
+
         if tags:
             tags_obj = Tag.objects.filter(pk__in=tags)
             if err_id := set(tags) ^ set(x.id for x in tags_obj):
@@ -162,14 +173,13 @@ class RecipeSerializers(serializers.ModelSerializer):
                     'id': list(err_id),
                 })
             self.initial_data['tags'] = tags_obj
-        else:
-            self.initial_data['tags'] = []
 
     def _to_internal_value_cooking_time(self):
         cooking_time = self.initial_data.get('cooking_time')
         if self.context['request'].method != 'PATCH' and not cooking_time:
-            raise serializers.ValidationError(
-                'Укажите, пожалуйста, время приготовления.')
+            raise serializers.ValidationError({
+                'cooking_time': 'Укажите, пожалуйста, время приготовления.'
+            })
         try:
             self.initial_data['cooking_time'] = int(cooking_time)
         except ValueError:
@@ -180,19 +190,19 @@ class RecipeSerializers(serializers.ModelSerializer):
                 }
             )
 
-    def _update_ingredients(self, name_param='ingredients'):
-        new_data_raw = self.validated_data[name_param]
+    def _update_ingredients(self):
+        new_data_raw = self.validated_data.get('ingredients')
         if new_data_raw:
             self.instance.ingredients.all().delete()
-            new_data_serializer = self.fields[name_param]
+            new_data_serializer = self.fields['ingredients']
             new_data_serialized = new_data_serializer.create(new_data_raw)
             self.instance.ingredients.add(*new_data_serialized)
 
-    def _update_tags(self, name_param='tags'):
-        new_data_raw = self.validated_data[name_param]
+    def _update_tags(self):
+        new_data_raw = self.validated_data.get('tags')
         if new_data_raw:
             self.instance.tags.clear()
-            self.instance.tags.add(*self.validated_data[name_param])
+            self.instance.tags.add(*self.validated_data['tags'])
 
 
 class RecipeShortSerializers(RecipeSerializers):
