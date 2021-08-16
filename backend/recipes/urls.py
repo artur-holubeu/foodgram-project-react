@@ -25,7 +25,8 @@ urlpatterns = [
                  'delete': 'destroy'
              }
          )),
-    path('recipes/download_shopping_cart/', ShoppingCartView.as_view({'get': 'get_file'}),
+    path('recipes/download_shopping_cart/',
+         ShoppingCartView.as_view({'get': 'get_file'}),
          name='get_file'),
     path('', include(router.urls)),
 ]

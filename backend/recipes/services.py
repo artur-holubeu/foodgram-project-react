@@ -1,8 +1,9 @@
-from django.http.response import HttpResponse
-import os
 import mimetypes
-from django.conf import settings
+import os
 import uuid
+
+from django.conf import settings
+from django.http.response import HttpResponse
 
 
 class DownloadList:

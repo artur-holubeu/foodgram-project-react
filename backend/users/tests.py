@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework.test import APIClient
-from rest_framework.authtoken.models import Token
 from django.test import TestCase
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
+
 from .models import Subscription
 
 
@@ -468,8 +469,10 @@ class SubscriptionTest(TestCase):
         self.following = APIClient()
         self.follower.force_login(self.user1)
         self.following.force_login(self.user2)
-        self.follower_token = f'Token {Token.objects.create(user=self.user1).key}'
-        self.following_token = f'Token {Token.objects.create(user=self.user2).key}'
+        self.follower_token = (f'Token '
+                               f'{Token.objects.create(user=self.user1).key}')
+        self.following_token = (f'Token '
+                                f'{Token.objects.create(user=self.user2).key}')
 
     def test_get_subscriptions(self):
         url = '/api/users/subscriptions/'
@@ -521,7 +524,7 @@ class SubscriptionTest(TestCase):
         self.assertEqual(
             404,
             response.status_code,
-            msg=(f'При GET запросе на несущсетсвующий адрес c токеном '
+            msg=('При GET запросе на несущсетсвующий адрес c токеном '
                  'авторизации возвращается статус 404')
         )
         # страница существует
@@ -585,7 +588,7 @@ class SubscriptionTest(TestCase):
         self.assertEqual(
             404,
             response.status_code,
-            msg=(f'При GET запросе на несущсетсвующий адрес c токеном '
+            msg=('При GET запросе на несущсетсвующий адрес c токеном '
                  'авторизации возвращается статус 404')
         )
         # страница существует
