@@ -10,14 +10,12 @@ from rest_framework.viewsets import GenericViewSet
 
 from .models import Subscription
 
-User = get_user_model()
-
 
 class UsersView(UserViewSet):
 
     def get_queryset(self):
         if self.request.method in SAFE_METHODS:
-            return User.objects.all()
+            return get_user_model().objects.all()
         return super().get_queryset()
 
     @action(["get", "put", "patch", "delete"],

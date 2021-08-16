@@ -11,7 +11,7 @@ class User(AbstractUser):
         unique=True,
         max_length=254,
         verbose_name=_('Email адрес'),
-        help_text=_('Email пользователя.')
+        help_text=_('Email адрес пользователя.'),
     )
 
     password = models.CharField(

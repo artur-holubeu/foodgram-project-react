@@ -48,10 +48,9 @@ services:
       - frontend_data:/usr/share/nginx/html/
       - static_value:/usr/share/nginx/html/backend_static/
       - media_value:/usr/share/nginx/html/backend_media/
-      - ./docs/html404.html:/etc/nginx/html404.html
-      - ./docs/50x.html:/etc/nginx/50x.html
-      - ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      - ./docs/html404.html:/var/html/html404.html
+      - ./docs/50x.html:/var/html/50x.html
+      - ../docs:/usr/share/nginx/html/api/docs
 
     depends_on:
       - backend

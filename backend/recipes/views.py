@@ -1,14 +1,17 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-
+from rest_framework.decorators import action
 from .filters import IngredientFilter, RecipeFilter
 from .models import FavoriteList, Ingredient, Recipe, ShoppingCart, Tag
 from .permissions import ActiveCurrentUserOrAdminOrReadOnly, AdminOrReadOnly
 from .serializers import (FavoriteListSerializer, IngredientSerializers,
                           RecipeSerializers, ShoppingCartSerializer,
                           TagSerializers)
+from .services import DownloadList
+from django.http import FileResponse
+
 
 
 class TagView(ModelViewSet):
@@ -24,7 +27,7 @@ class IngredientView(ModelViewSet):
     pagination_class = None
     permission_classes = (AdminOrReadOnly, )
     filter_backends = (IngredientFilter, )
-    search_fields = ('^name', '@name', )
+    search_fields = ('^name', )
 
 
 class RecipeView(ModelViewSet):
@@ -48,9 +51,8 @@ class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     permission_classes = (IsAuthenticated, )
     lookup_field = 'recipe_id'
 
-
-# @action(methods=['get'], detail=False, permisson_class=IsAuthenticated)
-# def download_shopping_cart(request):
-#     x = request
-#     user = request.user
-#     print(user)
+    @action(['GET'], url_name='get_file', detail=False)
+    def get_file(self, request, *args, **kwargs):
+        queryset = [x.recipe.ingredients.all()
+                    for x in request.user.shopping_lists.all()]
+        return DownloadList(queryset).download_file()

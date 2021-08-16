@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -37,3 +38,12 @@ class CreateAccountSerializer(UserCreateSerializer):
             'last_name',
             'password'
         )
+
+    def validate(self, attr):
+        super().validate(attr)
+        if len(attr.get('password')) >= 150:
+            raise ValidationError({
+                'password': ('Ensure this field has no more '
+                             'than 150 characters.')
+            })
+        return attr
