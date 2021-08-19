@@ -27,7 +27,6 @@ jobs:
         # запуск проверки проекта по flake8
         python -m flake8
         cd backend/
-        python manage.py makemigrations
         python manage.py test
 
   build_and_push_backend_to_docker_hub:
