@@ -40,7 +40,7 @@ class DownloadList:
         filepath = os.path.join(settings.MEDIA_ROOT, filename)
         with open(filepath, 'w') as file:
             divided_line = f'\n{"<" * 20} FOODGRAM {">" * 20}\n'
-            file.write(f'Список покупок для выбранных рецептов{divided_line}\n')
+            file.write(f'Список покупок для рецептов{divided_line}\n')
             for index, (name, payload) in enumerate(self.data.items(), 1):
                 file.write(f'{index}. {name.capitalize()} ({payload["unit"]})'
                            f' — {int(payload["amount"])}\n')
