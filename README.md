@@ -508,6 +508,7 @@ REQUEST FOR EXAMPLE:
 
 ##### Получить рецепт по id
 `GET /api/recipes/{id}`
+
 **RESPONSE**
 ```json5
 {
