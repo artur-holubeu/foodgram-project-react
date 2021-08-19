@@ -33,19 +33,23 @@ class IngredientAmountSerializers(serializers.ModelSerializer):
 
 
 class RecipeSerializers(serializers.ModelSerializer):
-    author = UserBaseSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(many=True,
                                               queryset=Tag.objects.all())
+    author = UserBaseSerializer(read_only=True)
     ingredients = IngredientAmountSerializers(many=True)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
 
     class Meta:
         model = Recipe
         fields = (
             'id',
-            'author',
             'tags',
+            'author',
             'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
             'name',
             'image',
             'text',
@@ -61,17 +65,6 @@ class RecipeSerializers(serializers.ModelSerializer):
             **IngredientSerializers(x.ingredient).data,
             **{'amount': x.amount}
         } for x in instance.ingredients.all().select_related('ingredient')]
-
-        user = self.context['request'].user
-        if user.is_anonymous:
-            rep['is_favorited'] = False
-            rep['is_in_shopping_cart'] = False
-        else:
-            rep['is_favorited'] = instance.favorite_lists.filter(
-                author=user).exists()
-            rep['is_in_shopping_cart'] = instance.shopping_lists.filter(
-                author=user).exists()
-
         return rep
 
     def create(self, validated_data):
@@ -98,6 +91,18 @@ class RecipeSerializers(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    def get_is_favorited(self, instance):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return instance.favorite_lists.filter(author=user).exists()
+
+    def get_is_in_shopping_cart(self, instance):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return instance.shopping_lists.filter(author=user).exists()
+
     def _update_ingredients(self):
         new_data_raw = self.validated_data.get('ingredients')
         if new_data_raw:
@@ -118,15 +123,18 @@ class RecipeSerializers(serializers.ModelSerializer):
 
 class RecipeShortSerializers(RecipeSerializers):
 
-    class Meta:
+    class Meta(RecipeSerializers.Meta):
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time',)
+        read_only_fields = ('id', 'name', 'image', 'cooking_time',)
 
     def to_representation(self, instance):
-        rep = dict()
+        rep = super().to_representation(instance)
+        new_rep = dict()
         for x in self.fields:
-            rep[x] = instance.__dict__.get(x)
-        return rep
+            if rep[x]:
+                new_rep[x] = rep[x]
+        return new_rep
 
 
 class SubscriptionsSerializer(UserBaseSerializer):
@@ -136,7 +144,8 @@ class SubscriptionsSerializer(UserBaseSerializer):
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes')
-        read_only_fields = ('email', 'username', 'first_name', 'last_name',)
+        read_only_fields = ('email', 'username', 'first_name', 'last_name',
+                            'is_subscribed')
 
     def to_representation(self, obj):
         rep = super().to_representation(obj)
