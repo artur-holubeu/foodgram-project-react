@@ -12,21 +12,18 @@ router.register('ingredients', IngredientView)
 router.register('recipes', RecipeView)
 
 urlpatterns = [
-    path('recipes/<int:recipe_id>/favorite/', FavoriteView.as_view(
-        {
-            'get': 'create',
-            'delete': 'destroy'
-        }
-    )),
-    path('recipes/<int:recipe_id>/shopping_cart/',
-         ShoppingCartView.as_view(
-             {
-                 'get': 'create',
-                 'delete': 'destroy'
-             }
-         )),
-    path('recipes/download_shopping_cart/',
-         ShoppingCartView.as_view({'get': 'get_file'}),
-         name='get_file'),
+    path(
+        'recipes/<int:recipe_id>/favorite/',
+        FavoriteView.as_view({'get': 'create', 'delete': 'destroy'}),
+    ),
+    path(
+        'recipes/<int:recipe_id>/shopping_cart/',
+        ShoppingCartView.as_view({'get': 'create', 'delete': 'destroy'})
+    ),
+    path(
+        'recipes/download_shopping_cart/',
+        ShoppingCartView.as_view({'get': 'get_file'}),
+        name='get_file'
+    ),
     path('', include(router.urls)),
 ]

@@ -11,31 +11,33 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(
-        blank=False,
         unique=True,
         max_length=200,
-        verbose_name=_('Название тэга'),
-        help_text=_('Название тэга.')
+        verbose_name=_('Название тега'),
+        help_text=_('Название тега.')
     )
     color = models.CharField(
-        blank=False,
         unique=True,
         max_length=200,
-        verbose_name=_('Цвет тэга'),
+        verbose_name=_('Цвет тега'),
         help_text=_('Цвет в HEX.')
     )
     slug = models.SlugField(
-        blank=False,
         unique=True,
         max_length=200,
-        verbose_name=_('Техническое название тэга'),
-        help_text=_('Техническое название тэга.')
+        verbose_name=_('Техническое название тега'),
+        help_text=_('Техническое название тега.')
     )
     updated_at = models.DateTimeField(
         auto_now=True,
         verbose_name=_('Дата обновления записи'),
         help_text=_('Задается автоматически при обновлении записи.')
     )
+
+    class Meta:
+        verbose_name = _('Ярлык')
+        verbose_name_plural = _('Ярлыки')
+        ordering = ('-updated_at',)
 
     def __str__(self):
         return self.name
@@ -48,21 +50,14 @@ class Tag(models.Model):
             self.slug = slugify(self.slug)
         super().save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = _('Ярлык')
-        verbose_name_plural = _('Ярлыки')
-        ordering = ('-updated_at',)
-
 
 class Ingredient(models.Model):
     name = models.CharField(
-        blank=False,
         max_length=200,
         verbose_name=_('Название ингредиента'),
         help_text=_('Название ингредиента.')
     )
     measurement_unit = models.CharField(
-        blank=False,
         max_length=200,
         verbose_name=_('Система измерений'),
         help_text=_('Система измерений для ингредиента.')
@@ -73,9 +68,6 @@ class Ingredient(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
-    def __str__(self):
-        return f'{self.name} ({self.measurement_unit})'
-
     class Meta:
         verbose_name = _('Ингредиент')
         verbose_name_plural = _('Ингредиенты')
@@ -85,6 +77,9 @@ class Ingredient(models.Model):
                                     name='unique_ingredient')
         ]
 
+    def __str__(self):
+        return f'{self.name} ({self.measurement_unit})'
+
 
 class IngredientsAmount(models.Model):
     ingredient = models.ForeignKey(
@@ -92,7 +87,7 @@ class IngredientsAmount(models.Model):
         related_name='recipe_ingredients',
         on_delete=models.CASCADE,
         verbose_name=_('Ингредиент'),
-        help_text=_('Ингреденет необходимый для рецепта.'),
+        help_text=_('Ингредиент необходимый для рецепта.'),
     )
     amount = models.IntegerField(
         verbose_name=_('Количество'),
@@ -108,17 +103,17 @@ class IngredientsAmount(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
-    @property
-    def name(self):
-        return self.ingredient.name
-
-    def __str__(self):
-        return f'{self.name} {self.amount} {self.ingredient.measurement_unit}'
-
     class Meta:
         verbose_name = _('Количество ингредиентов')
         verbose_name_plural = _('Количество ингредиентов')
         ordering = ('ingredient',)
+
+    def __str__(self):
+        return f'{self.name} {self.amount} {self.ingredient.measurement_unit}'
+
+    @property
+    def name(self):
+        return self.ingredient.name
 
 
 class Recipe(models.Model):
@@ -126,29 +121,26 @@ class Recipe(models.Model):
         IngredientsAmount,
         related_name='recipes',
         blank=True,
-        verbose_name=_('Ингридиенты'),
-        help_text=_('Ингридиенты к рецепту.'),
+        verbose_name=_('Ингредиенты'),
+        help_text=_('Ингредиенты к рецепту.'),
     )
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
         blank=True,
-        verbose_name=_('Тэги'),
-        help_text=_('Тэги рецепта.'),
+        verbose_name=_('Теги'),
+        help_text=_('Теги рецепта.'),
     )
     name = models.CharField(
-        blank=False,
         max_length=200,
         verbose_name=_('Название рецепта'),
         help_text=_('Название рецепта.')
     )
     text = models.TextField(
-        blank=False,
         verbose_name=_('Описание рецепта'),
         help_text=_('Полное пошаговое описание рецепта.')
     )
     cooking_time = models.IntegerField(
-        blank=False,
         verbose_name=_('Время приготовления'),
         help_text=_('Время приготовления (в минутах).'),
         validators=[
@@ -157,7 +149,6 @@ class Recipe(models.Model):
                 message='Значение должно быть больше 0')]
     )
     image = models.ImageField(
-        blank=False,
         upload_to=_('recipes/images/'),
         verbose_name=_('Картинка рецепта'),
         help_text=_('Картинка рецепта.'),
@@ -175,13 +166,13 @@ class Recipe(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = _('Рецепт')
         verbose_name_plural = _('Рецепты')
         ordering = ('-updated_at',)
+
+    def __str__(self):
+        return self.name
 
 
 class ShoppingCart(models.Model):
@@ -206,9 +197,6 @@ class ShoppingCart(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
-    def __str__(self):
-        return self.recipe.name
-
     class Meta:
         verbose_name = _('Список покупок')
         verbose_name_plural = _('Списки покупок')
@@ -217,6 +205,9 @@ class ShoppingCart(models.Model):
             models.UniqueConstraint(fields=['author', 'recipe'],
                                     name='unique_shopping_list')
         ]
+
+    def __str__(self):
+        return self.recipe.name
 
 
 class FavoriteList(models.Model):
@@ -241,9 +232,6 @@ class FavoriteList(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
-    def __str__(self):
-        return f'{self.author} {self.recipe.name}'
-
     class Meta:
         verbose_name = _('Список избранных')
         verbose_name_plural = _('Списки избранных')
@@ -252,3 +240,6 @@ class FavoriteList(models.Model):
             models.UniqueConstraint(fields=['author', 'recipe'],
                                     name='unique_favorite_list')
         ]
+
+    def __str__(self):
+        return f'{self.author} {self.recipe.name}'

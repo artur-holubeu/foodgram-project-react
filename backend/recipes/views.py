@@ -1,4 +1,3 @@
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
@@ -37,6 +36,13 @@ class RecipeView(ModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilter
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_destroy(self, instance):
+        instance.ingredients.all().delete()
+        super().perform_destroy(instance)
+
 
 class FavoriteView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = FavoriteList.objects.get_queryset()
@@ -53,6 +59,9 @@ class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
 
     @action(['GET'], url_name='get_file', detail=False)
     def get_file(self, request, *args, **kwargs):
-        queryset = [x.recipe.ingredients.all()
-                    for x in request.user.shopping_lists.all()]
+        queryset = request.user.shopping_lists.values_list(
+            'recipe__ingredients__ingredient__name',
+            'recipe__ingredients__ingredient__measurement_unit',
+            'recipe__ingredients__amount'
+        )
         return DownloadList(queryset).download_file()

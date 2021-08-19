@@ -30,18 +30,19 @@ class SubscriptionsListView(ListAPIView,
                             CreateModelMixin,
                             DestroyModelMixin,
                             GenericViewSet):
-    queryset = Subscription.objects.get_queryset()
     serializer_class = SubscriptionsSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'following_id'
 
     def get_queryset(self):
         if self.action == 'list':
-            return [user.following for user
-                    in self.request.user.follower.all()]
+            return [
+                x.following for x in
+                self.request.user.follower.all().select_related('following')
+            ]
         if self.action == 'destroy':
-            return self.request.user.follower.all()
-        return super().get_queryset()
+            return self.request.user.follower
+        return Subscription.objects.all()
 
     @action(['GET'], url_name='subscribe', detail=False)
     def create(self, request, *args, **kwargs):

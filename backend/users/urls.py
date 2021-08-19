@@ -8,14 +8,17 @@ router = DefaultRouter()
 router.register(r'', UsersView)
 
 urlpatterns = [
+    path(
+        'users/subscriptions/',
+        SubscriptionsListView.as_view({'get': 'list'}),
+        name='subscriptions'
+    ),
+    path(
+        'users/<int:following_id>/subscribe/',
+        SubscriptionsListView.as_view({'get': 'create', 'delete': 'destroy'}),
+        name='subscribe'
+    ),
+    path('users/', include(router.urls)),
     path('auth/', include('djoser.urls.authtoken')),
     path('auth/', include('djoser.urls.jwt')),
-    path('users/subscriptions/', SubscriptionsListView.as_view({
-        'get': 'list'
-    })),
-    path('users/<int:following_id>/subscribe/', SubscriptionsListView.as_view({
-        'get': 'create',
-        'delete': 'destroy'
-    }), name='subscribe'),
-    path('users/', include(router.urls)),
 ]

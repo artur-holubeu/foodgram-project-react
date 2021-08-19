@@ -22,12 +22,11 @@ class RecipeFilter(filters.FilterSet):
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart', )
 
     def check_recipes_in(self, queryset, name, value):
-        check_in_queryset = {
-            'is_favorited': self.request.user.favorite_lists.all(),
-            'is_in_shopping_cart': self.request.user.shopping_lists.all(),
+        rm = {
+            'is_favorited': self.request.user.favorite_lists,
+            'is_in_shopping_cart': self.request.user.shopping_lists,
         }
         if bool(value):
-            favorite_id = [item.recipe.id for item
-                           in check_in_queryset.get(name)]
-            return queryset.filter(id__in=favorite_id)
+            recipes_id = rm.get(name).values_list('recipe__id', flat=True)
+            return queryset.filter(id__in=recipes_id)
         return queryset

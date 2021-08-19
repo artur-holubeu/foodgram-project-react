@@ -4,8 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    """Реализация модели User с необходимыми дополнительными полями."""
-
     email = models.EmailField(
         blank=False,
         unique=True,
@@ -34,13 +32,13 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name',)
 
-    def __str__(self):
-        return self.username
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ('id',)
+
+    def __str__(self):
+        return self.username
 
 
 class Subscription(models.Model):
@@ -54,7 +52,6 @@ class Subscription(models.Model):
     following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        blank=True,
         related_name='following',
         verbose_name=_('Подписка'),
         help_text=_('Пользователь, на которого подписываются'),
@@ -65,10 +62,14 @@ class Subscription(models.Model):
         help_text=_('Задается автоматически при обновлении записи.')
     )
 
-    def __str__(self):
-        return self.user.username
-
     class Meta:
         verbose_name = 'Подписки'
         verbose_name_plural = 'Подписки'
         ordering = ('-updated_at',)
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'following'],
+                                    name='unique_subscription')
+        ]
+
+    def __str__(self):
+        return self.user.username
