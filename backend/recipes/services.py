@@ -40,13 +40,11 @@ class DownloadList:
         filepath = os.path.join(settings.MEDIA_ROOT, filename)
         with open(filepath, 'w') as file:
             divided_line = f'\n{"<" * 20} FOODGRAM {">" * 20}\n'
-            print(f'Список покупок для выбранных рецептов{divided_line}',
-                  file=file)
+            file.write(f'Список покупок для выбранных рецептов{divided_line}\n')
             for index, (name, payload) in enumerate(self.data.items(), 1):
-                print(f'{index}. {name.capitalize()} ({payload["unit"]}) '
-                      f'— {int(payload["amount"])}', file=file)
-            print(f'{divided_line}С любовью, команда FoodGram.',
-                  file=file, end='')
+                file.write(f'{index}. {name.capitalize()} ({payload["unit"]})'
+                           f' — {int(payload["amount"])}\n')
+            file.write(f'{divided_line}С любовью, команда FoodGram.')
 
         mime_type, _ = mimetypes.guess_type(filepath)
         return filename, filepath, mime_type
