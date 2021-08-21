@@ -67,16 +67,30 @@ class RecipeSerializers(serializers.ModelSerializer):
         } for x in instance.ingredients.all().select_related('ingredient')]
         return rep
 
+    def validate_ingredients(self, attrs) -> list:
+        if self.context['request'].method != 'PATCH' and not attrs:
+            raise serializers.ValidationError(
+                'At least one ingredient must be added.'
+            )
+        ingredients = {}
+        for item in attrs:
+            if ingredients.get(item.get('id')):
+                ingredients[item.get('id')] += item.get('amount')
+            else:
+                ingredients[item.get('id')] = item.get('amount')
+
+        return [
+            {'ingredient': ingredient, 'amount': amount}
+            for ingredient, amount in ingredients.items()
+        ]
+
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
-        ingredients = [
-            IngredientsAmount.objects.create(
-                ingredient=x.get('id'),
-                amount=x.get('amount'),
-            ) for x in ingredients]
         recipe.tags.add(*tags)
+        ingredients = [IngredientsAmount.objects.create(**x) for x in
+                       ingredients]
         recipe.ingredients.add(*ingredients)
         return recipe
 
@@ -108,10 +122,8 @@ class RecipeSerializers(serializers.ModelSerializer):
         if new_data_raw:
             self.instance.ingredients.all().delete()
             ingredients = [
-                IngredientsAmount.objects.create(
-                    ingredient=x.get('id'),
-                    amount=x.get('amount'),
-                ) for x in new_data_raw]
+                IngredientsAmount.objects.create(**x) for x in new_data_raw
+            ]
             self.instance.ingredients.add(*ingredients)
 
     def _update_tags(self):
@@ -124,7 +136,7 @@ class RecipeSerializers(serializers.ModelSerializer):
 class RecipeShortSerializers(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time', )
+        fields = ('id', 'name', 'image', 'cooking_time',)
 
 
 class SubscriptionsSerializer(UserBaseSerializer):
@@ -150,8 +162,8 @@ class SubscriptionsSerializer(UserBaseSerializer):
 class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
-        fields = ('user', 'following', )
-        read_only_fields = ('user', 'following', )
+        fields = ('user', 'following',)
+        read_only_fields = ('user', 'following',)
 
     def to_representation(self, instance):
         return SubscriptionsSerializer(
@@ -198,7 +210,7 @@ class FavoriteListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FavoriteList
-        fields = ('recipe', )
+        fields = ('recipe',)
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -228,7 +240,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShoppingCart
-        fields = ('recipe', )
+        fields = ('recipe',)
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
