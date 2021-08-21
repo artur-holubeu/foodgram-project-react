@@ -15,11 +15,11 @@ class UserBaseSerializer(serializers.ModelSerializer):
                   'password', 'is_subscribed')
         extra_kwargs = {'password': {'write_only': True}}
 
-    def get_is_subscribed(self, obj):
+    def get_is_subscribed(self, instance):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return obj.following.filter(user=user).exists()
+        return instance.following.filter(user=user).exists()
 
 
 class CreateAccountSerializer(UserCreateSerializer):

@@ -1,14 +1,16 @@
 from django.contrib.auth import get_user_model
 from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet
-from recipes.serializers import SubscriptionsSerializer
+from recipes.serializers import SubscribeSerializer, SubscriptionsSerializer
 from rest_framework.decorators import action
-from rest_framework.generics import ListAPIView
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
+from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
+                                   ListModelMixin)
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
 from .models import Subscription
+
+User = get_user_model()
 
 
 class UsersView(UserViewSet):
@@ -26,26 +28,27 @@ class UsersView(UserViewSet):
         return super().me(request, *args, **kwargs)
 
 
-class SubscriptionsListView(ListAPIView,
+class SubscriptionsListView(ListModelMixin,
                             CreateModelMixin,
                             DestroyModelMixin,
                             GenericViewSet):
-    serializer_class = SubscriptionsSerializer
+    queryset = Subscription.objects.all()
     permission_classes = (IsAuthenticated,)
     lookup_field = 'following_id'
 
-    def get_queryset(self):
-        if self.action == 'list':
-            return [
-                x.following for x in
-                self.request.user.follower.all().select_related('following')
-            ]
-        if self.action == 'destroy':
-            return self.request.user.follower
-        return Subscription.objects.all()
+    def list(self, request, *args, **kwargs):
+        self.serializer_class = SubscriptionsSerializer
+        self.queryset = User.objects.filter(
+            following__user__follower__user=request.user).distinct()
+        # self.queryset = [
+        #     x.following for x in
+        #     request.user.follower.all().select_related('following')
+        # ]
+        return super().list(request, args, kwargs)
 
     @action(['GET'], url_name='subscribe', detail=False)
     def create(self, request, *args, **kwargs):
+        self.serializer_class = SubscribeSerializer
         return super().create(request, args, kwargs)
 
     @action(['DELETE'], url_name='subscribe', detail=False)

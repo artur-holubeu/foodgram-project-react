@@ -33,8 +33,8 @@ class IngredientAmountSerializers(serializers.ModelSerializer):
 
 
 class RecipeSerializers(serializers.ModelSerializer):
-    tags = serializers.PrimaryKeyRelatedField(many=True,
-                                              queryset=Tag.objects.all())
+    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
+                                              many=True)
     author = UserBaseSerializer(read_only=True)
     ingredients = IngredientAmountSerializers(many=True)
     is_favorited = serializers.SerializerMethodField()
@@ -58,8 +58,7 @@ class RecipeSerializers(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-
-        rep['tags'] = [TagSerializers(x).data for x in instance.tags.all()]
+        rep['tags'] = TagSerializers(instance.tags.all(), many=True).data
 
         rep['ingredients'] = [{
             **IngredientSerializers(x.ingredient).data,
@@ -121,20 +120,10 @@ class RecipeSerializers(serializers.ModelSerializer):
             self.instance.tags.add(*self.validated_data['tags'])
 
 
-class RecipeShortSerializers(RecipeSerializers):
-
-    class Meta(RecipeSerializers.Meta):
+class RecipeShortSerializers(serializers.ModelSerializer):
+    class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time',)
-        read_only_fields = ('id', 'name', 'image', 'cooking_time',)
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        new_rep = dict()
-        for x in self.fields:
-            if rep[x]:
-                new_rep[x] = rep[x]
-        return new_rep
+        fields = ('id', 'name', 'image', 'cooking_time', )
 
 
 class SubscriptionsSerializer(UserBaseSerializer):
@@ -147,14 +136,27 @@ class SubscriptionsSerializer(UserBaseSerializer):
         read_only_fields = ('email', 'username', 'first_name', 'last_name',
                             'is_subscribed')
 
-    def to_representation(self, obj):
-        rep = super().to_representation(obj)
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
         rep['recipes_count'] = len(rep['recipes'])
         recipes_limit = self.context['request'].query_params.get(
             'recipes_limit')
         if recipes_limit:
             rep['recipes'] = rep['recipes'][:int(recipes_limit)]
         return rep
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = ('user', 'following', )
+        read_only_fields = ('user', 'following', )
+
+    def to_representation(self, instance):
+        return SubscriptionsSerializer(
+            instance.following,
+            context={'request': self.context.get('request')}
+        ).data
 
     def validate(self, data):
         request = self.context['request']
@@ -188,12 +190,6 @@ class SubscriptionsSerializer(UserBaseSerializer):
             'user': user,
             'following': following
         }
-
-    def create(self, validated_data):
-        return Subscription.objects.create(
-            user=validated_data['user'],
-            following=validated_data['following']
-        ).following
 
 
 class FavoriteListSerializer(serializers.ModelSerializer):
