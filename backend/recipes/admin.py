@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import (FavoriteList, Ingredient, IngredientsAmount, Recipe,
-                     ShoppingCart, Tag)
+from .models import (
+    FavoriteList, Ingredient, IngredientsAmount, Recipe, ShoppingCart, Tag,
+)
 
 
 class FirstLetterListFilter(admin.SimpleListFilter):
