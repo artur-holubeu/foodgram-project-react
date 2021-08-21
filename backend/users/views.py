@@ -3,8 +3,9 @@ from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet
 from recipes.serializers import SubscribeSerializer, SubscriptionsSerializer
 from rest_framework.decorators import action
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin)
+from rest_framework.mixins import (
+    CreateModelMixin, DestroyModelMixin, ListModelMixin,
+)
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 

@@ -5,8 +5,9 @@ from rest_framework import serializers
 from users.models import Subscription
 from users.serializers import UserBaseSerializer
 
-from .models import (FavoriteList, Ingredient, IngredientsAmount, Recipe,
-                     ShoppingCart, Tag)
+from .models import (
+    FavoriteList, Ingredient, IngredientsAmount, Recipe, ShoppingCart, Tag,
+)
 
 User = get_user_model()
 

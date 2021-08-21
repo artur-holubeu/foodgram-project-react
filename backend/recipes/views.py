@@ -7,9 +7,10 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from .filters import IngredientFilter, RecipeFilter
 from .models import FavoriteList, Ingredient, Recipe, ShoppingCart, Tag
 from .permissions import ActiveCurrentUserOrAdminOrReadOnly, AdminOrReadOnly
-from .serializers import (FavoriteListSerializer, IngredientSerializers,
-                          RecipeSerializers, ShoppingCartSerializer,
-                          TagSerializers)
+from .serializers import (
+    FavoriteListSerializer, IngredientSerializers, RecipeSerializers,
+    ShoppingCartSerializer, TagSerializers,
+)
 from .services import DownloadList
 
 
