@@ -18,7 +18,7 @@ class UsersView(UserViewSet):
 
     def get_queryset(self):
         if self.request.method in SAFE_METHODS:
-            return get_user_model().objects.all()
+            return User.objects.all()
         return super().get_queryset()
 
     @action(["get", "put", "patch", "delete"],
@@ -41,10 +41,6 @@ class SubscriptionsListView(ListModelMixin,
         self.serializer_class = SubscriptionsSerializer
         self.queryset = User.objects.filter(
             following__user__follower__user=request.user).distinct()
-        # self.queryset = [
-        #     x.following for x in
-        #     request.user.follower.all().select_related('following')
-        # ]
         return super().list(request, args, kwargs)
 
     @action(['GET'], url_name='subscribe', detail=False)

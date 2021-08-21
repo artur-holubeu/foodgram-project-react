@@ -137,7 +137,7 @@ const RecipeEdit = ({ onEdit }) => {
               if (non_field_errors) {
                 alert(non_field_errors.join(', '))
               }
-              const errors = Object.getOwnPropertyNames(err)
+              const errors = Object.values(err)
               if (errors) {
                 alert(errors.join(', '))
               }

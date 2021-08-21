@@ -32,10 +32,15 @@ POSTGRES_USER
 POSTGRES_PASSWORD
 ```
 
-### Запуск приложения
+### Запуск приложения https (с ssl)
 ```
 sudo docker-compose up -d
-
+```
+### Запуск приложения http
+```
+sudo docker-compose -f docker-compose.yml up -d
+```
+```
 sudo docker-compose exec backend python manage.py makemigrations
 sudo docker-compose exec backend python manage.py migrate --noinput
 sudo docker-compose exec backend python manage.py collectstatic --no-input
