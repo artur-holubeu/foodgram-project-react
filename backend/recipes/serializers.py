@@ -26,7 +26,11 @@ class IngredientSerializers(serializers.ModelSerializer):
 
 class IngredientAmountSerializers(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
-    amount = serializers.IntegerField(write_only=True, min_value=1)
+    amount = serializers.IntegerField(
+        write_only=True,
+        min_value=1,
+        max_value=99999
+    )
 
     class Meta:
         model = IngredientsAmount
