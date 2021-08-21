@@ -40,6 +40,8 @@ services:
   nginx:
     image: nginx:1.19.3
 
+    restart: always
+
     ports:
       - 80:80
 
