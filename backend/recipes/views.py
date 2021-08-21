@@ -45,14 +45,14 @@ class RecipeView(ModelViewSet):
 
 
 class FavoriteView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
-    queryset = FavoriteList.objects.get_queryset()
+    queryset = FavoriteList.objects.all()
     serializer_class = FavoriteListSerializer
     permission_classes = (IsAuthenticated, )
     lookup_field = 'recipe_id'
 
 
 class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
-    queryset = ShoppingCart.objects.get_queryset()
+    queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer
     permission_classes = (IsAuthenticated, )
     lookup_field = 'recipe_id'
