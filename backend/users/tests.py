@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
@@ -7,7 +8,6 @@ from .models import Subscription
 
 
 class PaginationTestCase(TestCase):
-
     def pagination(self, response, **kwargs):
         """Реализованы проверки:
             - наличие полей в ответе по атрибуту pagination_fields
@@ -292,11 +292,11 @@ class UsersTest(TestCase):
 
         # проверка флага обязательного поля и текста сообщения об ошибке
         error_msg_required_fields = {
-            'email': 'This field is required.',
-            'username': 'This field is required.',
-            'first_name': 'This field is required.',
-            'last_name': 'This field is required.',
-            'password': 'This field is required.',
+            'email': _('This field is required.'),
+            'username': _('This field is required.'),
+            'first_name': _('This field is required.'),
+            'last_name': _('This field is required.'),
+            'password': _('This field is required.'),
         }
         for field, error_msg in error_msg_required_fields.items():
             with self.subTest(field=field, msg=error_msg):
@@ -322,8 +322,8 @@ class UsersTest(TestCase):
             'password': '34Twesfre(8'
         }
         error_msg_uniq_fields = {
-            'email': 'Пользователь with this Email адрес already exists.',
-            'username': 'A user with that username already exists.',
+            'email': _('Пользователь с таким Email адрес уже существует.'),
+            'username': _('A user with that username already exists.'),
         }
         response = self.client.post(url, data=user_data)
         for field, error_msg in error_msg_uniq_fields.items():
@@ -350,10 +350,14 @@ class UsersTest(TestCase):
             'password': 'x' * 146 + '235L)'
         }
         error_msg_max_len_fields = {
-            'email': 'Ensure this field has no more than 254 characters.',
-            'username': 'Ensure this field has no more than 150 characters.',
-            'first_name': 'Ensure this field has no more than 150 characters.',
-            'last_name': 'Ensure this field has no more than 150 characters.',
+            'email': 'Убедитесь, что это значение содержит не более 254 '
+                     'символов.',
+            'username': 'Убедитесь, что это значение содержит не более 150 '
+                        'символов.',
+            'first_name': 'Убедитесь, что это значение содержит не более 150 '
+                          'символов.',
+            'last_name': 'Убедитесь, что это значение содержит не более 150 '
+                         'символов.',
             # 'password': 'Ensure this field has no more than 150 characters.',
             # почему-то, при тесте не срабатывает кастомный валидатор
         }
@@ -368,7 +372,7 @@ class UsersTest(TestCase):
                 )
                 self.assertEqual(
                     error_msg,
-                    response.data.get(field)[0],
+                    _(response.data.get(field)[0]),
                     msg=('Текст сообщения об ошибке для поля '
                          f'{field} некорректный')
                 )
@@ -382,10 +386,10 @@ class UsersTest(TestCase):
             'password': ''
         }
         error_msg_password = {
-            '': 'This field may not be blank.',
-            'poke': ('This password is too short. It must contain at '
-                     'least 8 characters.'),
-            'oooooooo': 'This password is too common.'
+            '': _('This field may not be blank.'),
+            'poke': _('Введённый пароль слишком короткий. Он должен '
+                      'содержать как минимум 8 символов.'),
+            'oooooooo': _('This password is too common.')
         }
         for check, error_msg in error_msg_password.items():
             with self.subTest(check=check, msg=error_msg):
