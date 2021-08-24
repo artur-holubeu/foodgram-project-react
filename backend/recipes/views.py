@@ -46,17 +46,27 @@ class RecipeView(ModelViewSet):
 
 
 class FavoriteView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
-    queryset = FavoriteList.objects.all()
     serializer_class = FavoriteListSerializer
     permission_classes = (IsAuthenticated, )
     lookup_field = 'recipe_id'
 
+    def get_queryset(self):
+        queryset = FavoriteList.objects.all()
+        if self.action == 'destroy':
+            return queryset.filter(author=self.request.user)
+        return queryset
+
 
 class ShoppingCartView(CreateModelMixin, DestroyModelMixin, GenericViewSet):
-    queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer
     permission_classes = (IsAuthenticated, )
     lookup_field = 'recipe_id'
+
+    def get_queryset(self):
+        queryset = ShoppingCart.objects.all()
+        if self.action == 'destroy':
+            return queryset.filter(author=self.request.user)
+        return queryset
 
     @action(['GET'], url_name='get_file', detail=False)
     def get_file(self, request, *args, **kwargs):

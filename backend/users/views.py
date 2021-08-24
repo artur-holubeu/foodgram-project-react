@@ -50,4 +50,5 @@ class SubscriptionsListView(ListModelMixin,
 
     @action(['DELETE'], url_name='subscribe', detail=False)
     def destroy(self, request, *args, **kwargs):
+        self.queryset = self.queryset.filter(user=request.user)
         return super().destroy(request, args, kwargs)
