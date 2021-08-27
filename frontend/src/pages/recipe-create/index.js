@@ -95,7 +95,13 @@ const RecipeCreate = ({ onEdit }) => {
             }
             const errors = Object.values(err)
             if (errors) {
-              alert(errors.join(', '))
+              let err_messages = [];
+              errors.forEach(val => {
+                for (const key in val) {
+                  err_messages.push(`${val[key]}`)
+                }
+              })
+              alert(err_messages.join('\n'))
             }
           })
         }}
