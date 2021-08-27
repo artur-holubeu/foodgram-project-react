@@ -129,7 +129,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'user': '100/min',
         'anon': '1000/day',
-    }
+    },
+    'EXCEPTION_HANDLER': 'utils.exception_handler.custom_exception_handler'
 }
 
 SIMPLE_JWT = {
@@ -154,7 +155,7 @@ DJOSER = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_URLS_REGEX = r'^/api/.*$'
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 STATIC_URL = '/backend_static/'
